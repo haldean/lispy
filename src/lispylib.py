@@ -1,3 +1,4 @@
+from functools import reduce
 def difference(*nums):
     return reduce(lambda a, b: a-b, nums)
 
@@ -48,3 +49,6 @@ def nullp(x):
 
 def append(lst, item):
     lst.append(item)
+
+def inv(x):
+    return not x

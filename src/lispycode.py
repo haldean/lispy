@@ -89,6 +89,19 @@ class LetEval(FutureEval):
             return body.evaluate(env)
         FutureEval.__init__(self, eval_let)
 
+class ImportEval(FutureEval):
+    def __init__(self, module, body):
+        def eval_import():
+            env = lispyenv.LispyEnv(self.env)
+            env.imp(module)
+            return body.evaluate(env)
+        FutureEval.__init__(self, eval_import)
+
+class ObjectItemEval(FutureEval):
+    def __init__(self, item, obj):
+        FutureEval.__init__(self, lambda: getattr(obj.evaluate(self.env), 
+                                                  self.env.value(item)))
+
 class LiteralEval(FutureEval):
     def __init__(self, obj):
         self.obj = obj
@@ -97,7 +110,7 @@ class LiteralEval(FutureEval):
             if isinstance(objs, LiteralEval):
                 objs = objs.obj
             if isinstance(objs, list):
-                objs = map(remove_literal_tag, objs)
+                objs = list(map(remove_literal_tag, objs))
             return objs
 
         if isinstance(self.obj, list):

@@ -6,9 +6,11 @@ reserved = {
     'cond': 'COND',
     'defun': 'DEFUN',
     'let': 'LET',
-    'progn': 'PROGN',
+    'prog': 'PROGN',
     'when': 'WHEN',
     'unless': 'UNLESS',
+    'with': 'WITH',
+    'self': 'SELF',
     }
 
 tokens = [
@@ -38,6 +40,7 @@ def lexer():
 
     def t_STRING(t):
         r'"([^"]|\")*?"'
+        t.value = eval(t.value)
         return t
 
     def t_COMMENT(t):
@@ -47,7 +50,7 @@ def lexer():
     t_ignore = ' \t\n'
 
     def t_error(t):
-        print 'Illegal character: %s' % t.value[0]
+        print(('Illegal character: %s' % t.value[0]))
         t.lexer.skip(1)
 
     lexer = lex.lex()

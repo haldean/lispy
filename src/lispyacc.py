@@ -29,8 +29,18 @@ def parser():
                 | progn
                 | when
                 | unless
+                | with
+                | self
                 | list'''
         t[0] = t[1]
+
+    def p_self(t):
+        'self : LPAREN SELF literal sexp RPAREN'
+        t[0] = ObjectItemEval(t[3], t[4])
+
+    def p_with(t):
+        'with : LPAREN WITH literal sexpseq RPAREN'
+        t[0] = ImportEval(t[3], t[4])
 
     def p_when(t):
         'when : LPAREN WHEN sexp sexpseq RPAREN'
@@ -126,5 +136,8 @@ def parser():
             t[0] = LiteralEval([t[1]] + t[2].value())
         else:
             t[0] = LiteralEval([t[1]])
+
+    def p_error(t):
+        print("Error before token %s." % yacc.token())
 
     return yacc.yacc()

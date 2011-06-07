@@ -18,7 +18,10 @@ class LispyEnv:
             '>': lispylib.gt,
             '<': lispylib.lt,
             '<=': lispylib.lte,
+            'not': lispylib.inv,
             }
+
+        self.imported_modules = {}
 
         for method in dir(lispylib):
             attr = getattr(lispylib, method)
@@ -26,11 +29,15 @@ class LispyEnv:
                 self.symbol_mappings[method] = attr
 
         self.parent = parent
+
+    def imp(self, module):
+        module = self.value(module)
+        self.imported_modules[module] = __import__(module)
     
     def apply(self, method_symbol, arguments=None):
-        method = self.value(method_symbol.symbol)
+        method = self.value(method_symbol)
         if arguments != None:
-            arguments = map(self.value, arguments)
+            arguments = list(map(self.value, arguments))
             return method(*arguments)
         else:
             return method()
@@ -43,6 +50,18 @@ class LispyEnv:
 
         if obj in self.bindings:
             return self.bindings[obj]
+
+        if '.' in obj:
+            module, var = obj.split('.', 1)
+            try:
+                return getattr(self.imported_modules[module], var)
+            except AttributeError:
+                pass
+
+        try:
+            return getattr(lispylib, obj)
+        except AttributeError:
+            pass
 
         if self.parent:
             try:
@@ -63,10 +82,10 @@ class LispyEnv:
             obj = objs[0]
             if isinstance(obj, lispycode.FutureEval):
                 obj = obj.evaluate(self)
-            print obj
+            print(obj)
             return obj
         else:
-            print '   '.join(map(self.lisp_print, objs))
+            print('   '.join(map(self.lisp_print, objs)))
             return objs
 
     def set(self, name, val):
