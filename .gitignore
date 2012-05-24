@@ -3,3 +3,4 @@ parsetab.py
 src/__pycache__
 *.bak
 *~
+*.pyc
