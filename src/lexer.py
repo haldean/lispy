@@ -1,31 +1,16 @@
 import ply.lex as lex
 
-reserved = {
-    'setq': 'SETQ',
-    'if': 'IF',
-    'cond': 'COND',
-    'defun': 'DEFUN',
-    'let': 'LET',
-    'prog': 'PROGN',
-    'when': 'WHEN',
-    'unless': 'UNLESS',
-    'with': 'WITH',
-    'self': 'SELF',
-    }
-
 tokens = [
-    'SYMBOL',
-    'NUMBER',
-    'LPAREN',
-    'RPAREN',
-    'TICK',
-    'STRING',
-    ] + list(reserved.values())
+    'LPAREN', 'LSQUARE', 'NUMBER', 'RPAREN',
+    'RSQUARE', 'STRING', 'SYMBOL', 'TICK',
+    ]
 
 def lexer():
     t_LPAREN = r'\('
     t_RPAREN = r'\)'
     t_TICK = r'\''
+    t_LSQUARE = r'\['
+    t_RSQUARE = r'\]'
 
     def t_NUMBER(t):
         r'\d+'
@@ -35,7 +20,6 @@ def lexer():
     def t_SYMBOL(t):
         r'[-+*/!@%^&=.a-zA-Z0-9_]+'
         t.value = t.value.lower()
-        t.type = reserved.get(t.value, 'SYMBOL')
         return t
 
     def t_STRING(t):
